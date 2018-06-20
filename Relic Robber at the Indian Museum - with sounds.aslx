@@ -1,0 +1,1416 @@
+<!--Saved by Quest 5.6.6108.15891-->
+<asl version="550">
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <game name="Relic Robber at the Indian Museum">
+    <gameid>0ca900c9-40fb-442b-b776-ff314d1d6c6e</gameid>
+    <version>1.0</version>
+    <firstpublished>2017</firstpublished>
+    <gridmap />
+    <feature_asktell />
+    <appendobjectdescription />
+    <multiplecommands />
+    <attr name="autodescription_youarein" type="int">2</attr>
+    <attr name="autodescription_youcango" type="int">0</attr>
+    <showhealth />
+    <attr name="autodescription_description" type="int">1</attr>
+    <attr name="autodescription_youcansee" type="int">3</attr>
+    <pov type="object">Player</pov>
+    <start type="script"><![CDATA[
+      msg ("You're a professional thief who works for an underground organization known as the “Relic Robbers.\"  <br/>You've just arrived at the city of Kolkata in India yesterday night, before checking into the hotel you're currently in. You don't know any details about your mission yet, aside from the fact that you'll be stealing something from the Indian Museum, the largest and oldest museum in India. <br/>However, word about this mission has been leaked, and you were told by your boss that people will be out there to interfere with your mission. People from other organizations that also evade the law and aren't afriad to use lethal means to achieve their goals. <br/>It's already noon, and you've been waiting for a sign. <br/>Before your departure to India, you were given the code \"Arabica.\" That will lead to your next clue. <br/>For now, you wait patiently. ")
+    ]]></start>
+    <onhealthzero type="script">
+      msg ("You've ran out of blood and died. Mission failed. ")
+      finish
+    </onhealthzero>
+  </game>
+  <object name="Hotel Room">
+    <inherit name="editor_room" />
+    <alias>Hotel Room</alias>
+    <attr name="grid_label">Hotel Room</attr>
+    <attr name="grid_fill">RosyBrown</attr>
+    <firstenter type="script">
+      EnableTurnScript (Opening Exit to Frontyard)
+      EnableTimer (Knocking on Door)
+    </firstenter>
+    <onexit type="script">
+      DisableTurnScript (Opening Exit to Frontyard)
+    </onexit>
+    <object name="Player">
+      <inherit name="editor_object" />
+      <inherit name="editor_player" />
+      <inherit name="namedmale" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist" />
+      <drop type="boolean">false</drop>
+      <take type="boolean">false</take>
+      <attr name="pov_look">You're a man in your late 20s of asian descent. You're good-looking and in prime shape. People call you by the name "Misuta."</attr>
+    </object>
+    <object name="Desk">
+      <inherit name="editor_object" />
+      <inherit name="surface" />
+      <feature_container />
+      <listchildren type="boolean">false</listchildren>
+      <hidechildren />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <attr name="feature_edible" type="boolean">false</attr>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+        <value>Drop</value>
+      </inventoryverbs>
+      <look type="script">
+        MakeObjectVisible (Paperclip)
+        MakeObjectVisible (Telephone)
+        msg ("Nothing seems really out of the usual. You do notice the " + ObjectLink(Telephone) + " and a " + ObjectLink(Paperclip) + ".")
+      </look>
+      <object name="Paperclip">
+        <inherit name="editor_object" />
+        <visible type="boolean">false</visible>
+        <take />
+        <attr name="feature_usegive" type="boolean">false</attr>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Drop</value>
+        </inventoryverbs>
+        <look type="script">
+          msg ("You just got an idea. You could be use the paperclip to make some handy tool. But you need a plier first.")
+        </look>
+      </object>
+      <object name="Telephone">
+        <inherit name="editor_object" />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <look type="script">
+          msg ("You look at the telephone. ")
+          if (Coffee.parent = Player) {
+            msg ("You don't feel like calling.")
+          }
+          else {
+            msg ("Hmm... maybe you could order some coffee. It'll be a long night afterall.")
+            msg (do(this, call))
+          }
+        </look>
+        <call type="script">
+          msg ("You decided to call the front desk to order some coffee.")
+          AddToInventory (Coffee)
+        </call>
+      </object>
+    </object>
+    <object name="Closet">
+      <inherit name="container_closed" />
+      <inherit name="editor_object" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <usestandardverblist type="boolean">false</usestandardverblist>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <drop type="boolean">false</drop>
+      <feature_container />
+      <close type="boolean">false</close>
+      <onopen type="script">
+        MakeObjectVisible (Toolbox)
+        msg ("You notice a " + ObjectLink(Toolbox) + " at the bottom corner. Perhaps it could come in handy? You also find a " + ObjectLink(Rubber Ducky) + " lying on the ground.")
+      </onopen>
+      <onclose type="script">
+        MakeObjectInvisible (Toolbox)
+        msg ("You closed the closet.")
+      </onclose>
+      <object name="Toolbox">
+        <inherit name="editor_object" />
+        <inherit name="container_closed" />
+        <alias>Toolbox</alias>
+        <visible type="boolean">false</visible>
+        <feature_container />
+        <close type="boolean">false</close>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Open</value>
+        </displayverbs>
+        <drop type="boolean">false</drop>
+        <look type="script">
+        </look>
+        <onopen type="script">
+          msg ("You notice a typical set of mechanic's tools. You pick up a plier. It might come in handy.")
+          AddToInventory (Plier)
+        </onopen>
+        <object name="Plier">
+          <inherit name="editor_object" />
+          <take />
+          <feature_usegive />
+          <look type="script">
+            msg ("You could potentially use the plier on something...")
+          </look>
+          <selfuseon type="scriptdictionary">
+            <item key="Paperclip">
+              msg ("You applied pliers on the paperclip. You got a " + ObjectLink(Tension Wrench) + ".")
+              AddToInventory (Tension Wrench)
+              RemoveObject (Paperclip)
+            </item>
+            <item key="Wires">
+              msg ("You used your pliers to mess with the wires. Now the lighting system in the room has failed. Maybe you can tell this to the maintenance guy to get him distracted?")
+              RemoveObject (Wires)
+            </item>
+          </selfuseon>
+        </object>
+      </object>
+      <object name="Rubber Ducky">
+        <inherit name="editor_object" />
+        <take />
+        <look type="script">
+          msg ("Could be a lucky charm.")
+        </look>
+        <fling type="script"><![CDATA[
+          if (Assassin.parent = Courtyard) {
+            msg ("You fling the Rubber Ducky at the Assassin and that hits her right in the nose somehow. <br/>She begins to nose bleed and removes her mask to clean off the blood. <br/>She did this unconsciously and noticed too late that you already saw her real face. <br/>You recognize her from somewhere.<br/>Awkwardly, she retreats without a word. ")
+            MoveObject (Assassin, Frontyard)
+            RemoveObject (Rubber Ducky)
+          }
+          else {
+            msg ("Why do you want to do that...")
+          }
+        ]]></fling>
+      </object>
+    </object>
+    <object name="Door">
+      <inherit name="editor_object" />
+      <inherit name="openable" />
+      <feature_container />
+      <close />
+      <open />
+      <isopen type="boolean">false</isopen>
+      <contentsprefix type="string"></contentsprefix>
+      <autounlock type="boolean">false</autounlock>
+      <autoopen type="boolean">false</autoopen>
+      <nokeymessage>You </nokeymessage>
+      <unlockmessage type="string"></unlockmessage>
+      <hidechildren type="boolean">false</hidechildren>
+      <locked type="boolean">false</locked>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </inventoryverbs>
+      <visible />
+      <usestandardverblist type="boolean">false</usestandardverblist>
+      <listalias>Door</listalias>
+      <visitor type="object">No one</visitor>
+      <openscript type="script">
+        if (Knocking on Door.enabled) {
+          msg ("You don't see anyone. You close the door.")
+          HelperCloseObject (Door)
+        }
+        else if (Door.visitor = No one) {
+          msg ("You should look at the door first just in case.")
+          HelperCloseObject (Door)
+        }
+        else if (Door.visitor = Room Service) {
+          if (Coffee.parent = Player) {
+            msg ("You see the room service assistant again. You decided to ignore her since you already have your coffee.")
+          }
+          else {
+            msg ("You greeted the lady and decided to order some coffee. ")
+            AddToInventory (Coffee)
+          }
+          EnableTimer (Knocking on Door)
+        }
+        else if (Door.visitor = Assassin) {
+          msg ("You opened the door to greet the women. Before you could even react, you were already dead. ")
+          finish
+        }
+        else if (Door.visitor = Deliverer) {
+          msg ("You open the door to greet the mysterious person. He hands you a " + ObjectLink(Suitcase) + " and leaves without a word.")
+          AddToInventory (Suitcase)
+        }
+      </openscript>
+      <look type="script"><![CDATA[
+        msg ("You take a peak through the door viewer.")
+        if (Suitcase.parent = Player) {
+          msg ("You don't see anything.")
+        }
+        else if (Knocking on Door.enabled = false) {
+          if (RandomChance(50)) {
+            Door.visitor = Room Service
+            MakeObjectVisible (Room Service)
+            msg ("You see a room service assistant.<br/>You ask her the key question, \"What's to drink\"?<br/>She responds, \"Perhaps some Coffee?\"<br/>You do feel like getting some coffee though.<br/>would you like to open or ignore the door?")
+          }
+          else if (RandomChance(30)) {
+            Door.visitor = Assassin
+            MakeObjectVisible (Assassin)
+            msg ("You see a suspicious looking women at the door. She seems to be of Indian descent. <br/>You ask her the key question, \"What's to drink\"?<br/>She doesn't respond.<br/>Would you like to open or ignore the door?")
+          }
+          else {
+            Door.visitor = Deliverer
+            MakeObjectVisible (Deliverer)
+            msg ("You see someone you don't recognize. <br/>You ask him the key question, \"What's to drink\"?<br/>He responds solemnly, \"Arabica.\"<br/>Would you like to open or ignore the door?")
+          }
+        }
+        else {
+          msg ("You don't see anything.")
+        }
+      ]]></look>
+      <ignore type="script">
+        if (Knocking on Door.enabled = false) {
+          msg ("You decided to ignore the person knocking on the door. ")
+          EnableTimer (Knocking on Door)
+        }
+        else {
+          msg ("There's nothing to ignore now really.")
+        }
+      </ignore>
+      <object name="Room Service">
+        <inherit name="editor_object" />
+        <object name="Coffee">
+          <inherit name="editor_object" />
+          <inherit name="edible" />
+          <take type="boolean">false</take>
+          <feature_edible />
+          <eathealth type="int">100</eathealth>
+          <eatmsg>You drank some coffee. You feel revitalized!</eatmsg>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Eat</value>
+          </inventoryverbs>
+          <look type="script">
+            msg ("You've always considered yourself a hardcore fan of coffee. Your feel that your life depends on it, really.")
+          </look>
+          <eat type="script">
+            if (HasString(this, "eatmsg")) {
+              msg (this.eatmsg)
+            }
+            else {
+              msg (DynamicTemplate("Eaten", this))
+            }
+            if (HasInt(game.pov, "health")) {
+              game.pov.health = game.pov.health + this.eathealth
+            }
+            if (game.pov.parent = Hotel Room) {
+              MoveObject (Coffee, Room Service)
+            }
+            else if (game.pov.parent = Frontyard) {
+              MoveObject (Coffee, Coffee Store)
+            }
+            else {
+              destroy (this.name)
+            }
+          </eat>
+        </object>
+      </object>
+      <object name="Deliverer">
+        <inherit name="editor_object" />
+        <object name="Suitcase">
+          <inherit name="editor_object" />
+          <inherit name="container_closed" />
+          <inherit name="container_lockable" />
+          <feature_container />
+          <keycount type="int">1</keycount>
+          <autounlock type="boolean">false</autounlock>
+          <nokeymessage>You cannot open this. You don't have a key either. You need a tool.</nokeymessage>
+          <unlockmessage>You used the tension wrench on the suitcase. With you master skills as a thief, you unlocked the suitcase very easily.</unlockmessage>
+          <canlockopen type="boolean">false</canlockopen>
+          <drop type="boolean">false</drop>
+          <take type="boolean">false</take>
+          <close type="boolean">false</close>
+          <lockmessage>You cannot open this. You don't have a key either. You need a tool.</lockmessage>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+            <value>Open</value>
+            <value>Close</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Open</value>
+            <value>Close</value>
+          </inventoryverbs>
+          <key type="object">Tension Wrench</key>
+          <onopen type="script">
+            msg ("You opened the suitcase and obtained a bomb, a laser, a cellphone, and a notebook.")
+            AddToInventory (Bomb)
+            AddToInventory (Notebook)
+            AddToInventory (Cellphone)
+            AddToInventory (Laser)
+            RemoveObject (Suitcase)
+          </onopen>
+          <object name="Bomb">
+            <inherit name="editor_object" />
+            <inherit name="container_closed" />
+            <attr name="feature_container" type="boolean">false</attr>
+            <inventoryverbs type="stringlist">
+              <value>Look at</value>
+            </inventoryverbs>
+            <displayverbs type="stringlist">
+              <value>Look at</value>
+            </displayverbs>
+            <look type="script">
+              if (Remote Control.parent = Bomb) {
+                AddToInventory (Remote Control)
+                msg ("You examine the bomb closely and notice a remote control attached to it. This must be used to detonate the bomb.")
+              }
+              else {
+                msg ("You don't notice anything else peculiar about it.")
+              }
+            </look>
+            <object name="Remote Control">
+              <inherit name="editor_object" />
+              <visible />
+              <inventoryverbs type="stringlist">
+                <value>Look at</value>
+              </inventoryverbs>
+              <drop type="boolean">false</drop>
+              <displayverbs type="stringlist">
+                <value>Look at</value>
+              </displayverbs>
+              <look type="script">
+                msg ("You look at the remote control, there appears to only be one big red button at the center. Press the button only when you feel ready...")
+              </look>
+              <press type="script">
+                msg ("Are you sure you want to press the remote control now? This will probably detonate the bomb. Please respond \"Yes\" or \"No.\"")
+                get input {
+                  if (result = "Yes" or result = "yes" or result = "yes.") {
+                    if (Security Guards.parent = Anthropology Room) {
+                      play sound ("Bomb-SoundBible.com-891110113.mp3", false, false)
+                      msg ("You could hear the bomb explode in the distance and so did the security guards! The security guards hurriedly ran to the frontyard to check it out. The room is now empty!")
+                      RemoveObject (Remote Control)
+                      MoveObject (Security Guards, Frontyard)
+                    }
+                    else {
+                      msg ("The bomb has exploded at an inappropriate time. The security guards looked at your direction and caught you with the remote control! You've been arrested. It's game over for you. ")
+                      finish
+                    }
+                    RemoveObject (Bomb)
+                  }
+                  else {
+                    msg ("The remote control is left untouched. ")
+                  }
+                }
+              </press>
+            </object>
+          </object>
+          <object name="Notebook">
+            <inherit name="editor_object" />
+            <inventoryverbs type="stringlist" />
+            <displayverbs type="stringlist" />
+            <drop type="boolean">false</drop>
+            <read type="script"><![CDATA[
+              play sound ("page-flip-01a.mp3", false, false)
+              if (game.pov.parent = Frontyard) {
+                msg ("To complete this mission you need to obtain the following 3 items:<br/>Mughal-Period Jade Dagger<br/>Buddha's Ashes<br/>Mask of Shiva")
+              }
+              else if (game.pov.parent = Gallery) {
+                if (Got(Mask of Shiva)) {
+                  msg ("Once you have collected all the relics, please text the number \"1293758934\" so that you can be picked up. Please wait in the courtyard until then.")
+                }
+                else {
+                  msg ("The Mask of Shiva is rumored to be cursed. It often disappears and then reappears, causing much frustation to the owners. It's like it has a life of its own. In case there is any trouble, please chant the words \"apane krodh ko shaant\"")
+                }
+              }
+              else if (game.pov.parent = Courtyard) {
+                msg ("Once you have collected all the relics, please text the number \"1293758934\" so that you can be picked up. Please wait in the courtyard until then.")
+              }
+              else {
+                msg ("There's nothing worth reading yet.")
+              }
+            ]]></read>
+          </object>
+          <object name="Cellphone">
+            <inherit name="editor_object" />
+            <inventoryverbs type="stringlist">
+              <value>Use</value>
+              <value>Look at</value>
+            </inventoryverbs>
+            <displayverbs type="stringlist">
+              <value>Look at</value>
+            </displayverbs>
+            <feature_usegive />
+            <text type="script">
+              msg ("Please insert the phone number you would like to text:")
+              get input {
+                if (result = "1293758934") {
+                  msg ("You've have text this number according to the notebook. Now you must wait in the courtyard to be picked up. ")
+                  EnableTimer (Helicopter Arrival)
+                }
+                else {
+                  msg ("Why do you want to text this number?")
+                }
+              }
+            </text>
+            <look type="script">
+              msg ("You look at the cellphone. There appears to a program installed for hacking the motion detectors. Perhaps you could use the cellphone to turn off motion detectors.")
+            </look>
+            <use type="script"><![CDATA[
+              if (Player.parent = Archaeology Room) {
+                if (Motion Sensors 1.parent = Archaeology Room) {
+                  if (Maintenance Guy.Parent = Archaeology Room) {
+                    msg ("You shouldn't try to use the cellphone to close the motion sensors yet. The maintenance guy may notice.")
+                  }
+                  else {
+                    msg ("You used the cellphone to successfully sabatoge the motion sensors in the room. ")
+                    RemoveObject (Motion Sensors 1)
+                    MoveObject (Maintenance Guy, Archaeology Room)
+                    msg ("<br/>However, you also hear the " + ObjectLink(Maintenance Guy) + " coming back...He sees you while in shock. You should take action before he calls for help!")
+                  }
+                }
+                else {
+                  msg ("The motion sensors are already turned off.")
+                }
+              }
+              else if (game.pov.parent = Anthropology Room) {
+                if (Motion Sensors 2.parent = Anthropology Room) {
+                  msg ("You used the cellphone to successfully sabatoge the motion sensors in the room.<br/>However it seems that you have a lethal guest waiting for you...<br/>")
+                  RemoveObject (Motion Sensors 2)
+                  EnableTurnScript (Assassin Attack)
+                  MakeObjectVisible (Assassin)
+                  MoveObjectHere (Assassin)
+                }
+                else {
+                  msg ("The motion sensors are already turned off...")
+                }
+              }
+              else {
+                msg ("There's nothing to use the cellphone for...")
+              }
+            ]]></use>
+          </object>
+          <object name="Laser">
+            <inherit name="editor_object" />
+            <usedefaultprefix />
+            <inventoryverbs type="stringlist">
+              <value>Look at</value>
+              <value>Use</value>
+            </inventoryverbs>
+            <feature_usegive />
+            <look type="script">
+              msg ("You look at the laser and tried press its button. You notice that the laser emits energy and could probably precisely cut through things, including glass. ")
+            </look>
+            <selfuseon type="scriptdictionary">
+              <item key="Window">
+                msg ("You started the laser and traced a circle on the window, just enough for you to crawl through and enter the museum. ")
+                MakeExitVisible (Frontyard to Archaeology)
+                msg ("You can now go north to enter the museum.")
+              </item>
+              <item key="Glass case 1">
+                if (Maintenance Guy.parent = Archaeology Room) {
+                  msg ("The Maintenance Guy is still nearby, you don't think you can use the laser without him noticing")
+                }
+                else if (Maintenance Guy Uniform.parent = Player) {
+                  msg ("You should put on your uniform first. The security guards are heading you way!")
+                }
+                else if (Security Guards.parent = Archaeology Room) {
+                  msg ("The security guards are in the room, they will notice you...")
+                }
+                else if (Security Guards.parent = Anthropology Room) {
+                  msg ("The security guards are in the Anthropology Room, they might notice you. You need to figure out a way to distract them...")
+                }
+                else if (Bomb.parent = Trash Can) {
+                  msg ("You still need to wait for the appropriate time to detonate the bomb....")
+                }
+                else {
+                  msg ("You traced a circle on the glass case using your laser and created a hole large enough for you to reach your hand in. You successfully obtained the snake charmer. ")
+                  MoveObject (Jade Dagger, Player)
+                }
+              </item>
+            </selfuseon>
+          </object>
+        </object>
+      </object>
+      <object name="Assassin">
+        <inherit name="editor_object" />
+        <inherit name="edible" />
+        <visible />
+        <attr name="feature_edible" type="boolean">false</attr>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <attack type="script"><![CDATA[
+          if (game.pov.parent = Anthropology Room and Assassin Attack.enabled) {
+            if (Got(Spear)) {
+              msg ("You attacked the Assassin with your spear! Your weapon range is longer and made it difficult for her to dodge. She seems to panick and retreated. ")
+              DisableTurnScript (Assassin Attack)
+              MoveObject (Assassin, Frontyard)
+              RemoveObject (Spear)
+              play sound ("spear_throw-Mike_Koenig-2064202968.mp3", false, false)
+            }
+            else if (Got(Antique Knife)) {
+              msg ("You attack the assassin with antique knife but it seems to have little effect! Your range is too short. ")
+            }
+          }
+          else if (game.pov.parent = Courtyard) {
+            msg ("You don't really feel like attacking...<br/>But you feeling lucky though.")
+          }
+          else {
+            msg ("You can't attack!")
+          }
+        ]]></attack>
+        <speak type="script"><![CDATA[
+          if (game.pov.parent = Anthropology Room) {
+            msg ("Talking is futile now.")
+          }
+          else if (game.pov.parent = Courtyard) {
+            msg ("You try talking to the assassin. You threatened that if she did not let you go, you will open the jar containing the Buddha's ashes and throw the ashes out. <br/>\"I'm a professional thief afterall. The relics themselves mean nothing to me. I just steal for the pay check,\" you said.<br/>The assassin seemed worried and retreated. ")
+            MoveObject (Assassin, Frontyard)
+            MakeObjectInvisible (Assassin)
+          }
+        ]]></speak>
+        <look type="script">
+          msg ("The Assassin is wearing all black with a cloth covering her face. She appears to be of Indian descent. She moves fast and efficiently and carries two mid-length blades. She grips them by the back-hand and is amazingly skilled. You notice her eyes were emerald green, piercing but quite beautiful. ")
+        </look>
+      </object>
+      <object name="No one">
+        <inherit name="editor_object" />
+        <visible />
+      </object>
+    </object>
+    <exit name="Exit to Frontyard" alias="out" to="Frontyard">
+      <inherit name="outdirection" />
+      <visible type="boolean">false</visible>
+      <locked type="boolean">false</locked>
+      <runscript />
+      <script type="script">
+        MoveObject (Player, Frontyard)
+      </script>
+    </exit>
+    <turnscript name="Opening Exit to Frontyard">
+      <enabled type="boolean">false</enabled>
+      <script>
+        if (Bomb.parent = Player and Notebook.parent = Player and Cellphone.parent = Player and Laser.parent = Player and Rubber Ducky.parent = Player) {
+          MakeExitVisible (Exit to Frontyard)
+          msg ("You are ready to head out of the hotel for the mission.")
+        }
+      </script>
+    </turnscript>
+  </object>
+  <verb>
+    <property>ignore</property>
+    <pattern>ignore</pattern>
+    <defaultexpression>"You can't ignore " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>call</property>
+    <pattern>call</pattern>
+    <defaultexpression>"You can't call " + object.article + "."</defaultexpression>
+  </verb>
+  <object name="Tension Wrench">
+    <inherit name="editor_object" />
+    <feature_usegive />
+    <look type="script">
+      msg ("Combined with a your skills, a tension wrench that can open can key hole!")
+    </look>
+    <selfuseon type="scriptdictionary">
+      <item key="Suitcase">
+        msg ("You used the tension wrench to successfully unlock the suitcase.")
+        HelperOpenObject (Suitcase)
+      </item>
+      <item key="Cabinet">
+        msg ("You skillfully used the tension wrench to unlock the cabinet and opened it.")
+        HelperOpenObject (Cabinet)
+      </item>
+    </selfuseon>
+  </object>
+  <object name="Frontyard">
+    <inherit name="editor_room" />
+    <attr name="grid_width" type="int">10</attr>
+    <attr name="grid_length" type="int">4</attr>
+    <attr name="grid_label">Frontyard of Museum</attr>
+    <attr name="grid_border">Black</attr>
+    <attr name="grid_fill">SpringGreen</attr>
+    <description><![CDATA[You've taken a cab and drove your way to the Indian museum. The ride took about 30 minutes. You arrive at the frontyard of the museum and notice the grand museum in front of you. The Indian Museum is the largest and oldest museum in India and has rare collections of antiques, armour and ornaments, fossils, skeletons, mummies, and Mughal paintings. It was founded by the Asiatic Society of Bengal in Kolkata, India, in 1814.<br/>Nonetheless, you're not here to be a tourist. Be on guard from now on. There are security guards patrolling the area. Remember to use the gadgets you've received from the suitcase wisely. Read the notebook for any information you may need. First things first, you need to find a place to put your bomb. That will be useful later in case you are about to get caught. Good Luck!]]></description>
+    <enter type="script"><![CDATA[
+      msg ("<br/>You should probably read what's on the notebook first to figure out what you need to steal. ")
+      MakeObjectInvisible (Assassin)
+    ]]></enter>
+    <exit alias="in" to="Hotel Room">
+      <inherit name="indirection" />
+      <visible type="boolean">false</visible>
+      <locked />
+      <lockmessage>You can't go that way.</lockmessage>
+      <runscript />
+      <script type="script">
+        MoveObject (Player, Archaelogy Room)
+      </script>
+    </exit>
+    <object name="Window">
+      <inherit name="editor_object" />
+      <visible type="boolean">false</visible>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look type="script">
+        msg ("The window appears not too thick. Perhaps you get use the laser to break in.")
+      </look>
+    </object>
+    <exit name="Frontyard to Archaeology" alias="north" to="Archaeology Room">
+      <inherit name="northdirection" />
+      <visible type="boolean">false</visible>
+      <locked type="boolean">false</locked>
+    </exit>
+    <object name="Trash Can">
+      <inherit name="editor_object" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look type="script">
+        msg ("You look at the trash can on the side of street. You cannot see through what's inside at all. Could be a good place to put your bomb.")
+      </look>
+      <placebombin type="script">
+        if (Remote Control.parent = Player) {
+          if (Bomb.parent = Player) {
+            msg ("You placed the bomb in the trash can.")
+            MoveObject (Bomb, Trash Can)
+          }
+          else {
+            msg ("You already place the bomb in the trash can.")
+          }
+        }
+        else {
+          msg ("Just before you place the bomb, you realize that you are still missing something? How are you going to detonate it later?")
+        }
+      </placebombin>
+    </object>
+    <object name="Security Guard">
+      <inherit name="editor_object" />
+      <attr name="feature_usegive" type="boolean">false</attr>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <askdefault type="script">
+        msg ("I don't know what you saying.")
+      </askdefault>
+      <telldefault type="script">
+        msg ("Don't talk to me please. ")
+      </telldefault>
+      <look type="script">
+        msg ("You look at the security guard. Conveniently, he seems to have a similar body type as yours. You could use his uniform for yourself. Ask him about it.")
+      </look>
+      <ask type="scriptdictionary">
+        <item key="uniform">
+          msg ("The security guard responds, \"What? You're asking about uniform? Did you lose yours or something? I do have a spare, but I don't have a reason to give it to you.... Hmmm... I am feeling a bit hungry though.\"")
+        </item>
+        <item key="berries">
+          msg ("Berries... hmmm... I do like them.")
+        </item>
+        <item key="coffee">
+          msg ("Not really a fan of coffee...")
+        </item>
+      </ask>
+      <object name="Security Guard Uniform">
+        <inherit name="editor_object" />
+        <attr name="feature_usegive" type="boolean">false</attr>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+        </inventoryverbs>
+        <wear type="script">
+          if (Bomb.parent = Trash Can) {
+            msg ("You wear the security guard uniform. It fits rather nicely. You notice that the security who gave you the uniform has hurried away while yowling in pain. You feel a bit sorry for him, but that also makes your job easier for you. Now you just have to wait until the night to sneak in! ")
+            EnableTimer (Wait until nightfall)
+            MakeObjectInvisible (Security Guard Uniform)
+          }
+          else if (Got(Bomb)) {
+            msg ("Before you wear the uniform, you still haven't figured out where to put the bomb...")
+          }
+        </wear>
+        <look type="script">
+          msg ("A dashing, navy blue uniform. Just right for your size. ")
+        </look>
+      </object>
+    </object>
+    <object name="Bush">
+      <inherit name="editor_object" />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look type="script"><![CDATA[
+        msg ("The bush looks like it has spikes on it... better not touch it.<br/>You do notice some juicy looking berries on it though.")
+      ]]></look>
+      <pick type="script"><![CDATA[
+        msg ("You try to touch the bush. The spikes poked you and you started bleeding. You lost some health. Gotta be careful!<br/>You did manage to get some " + ObjectLink(Berries) + " though.")
+        DecreaseHealth (20)
+        AddToInventory (Berries)
+      ]]></pick>
+      <object name="Berries">
+        <inherit name="editor_object" />
+        <inherit name="edible" />
+        <visible />
+        <feature_edible />
+        <eatmsg>You couldn't resist eating the berries! But you also got yourself a serious case of food poisoning.</eatmsg>
+        <eathealth type="int">-30</eathealth>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Eat</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Eat</value>
+        </inventoryverbs>
+        <feature_usegive />
+        <look type="script">
+          msg ("What juicy looking red berries. However, you don't really recognize the species. Perhaps you could give these to someone...")
+        </look>
+        <eat type="script">
+          if (HasString(this, "eatmsg")) {
+            msg (this.eatmsg)
+          }
+          else {
+            msg (DynamicTemplate("Eaten", this))
+          }
+          if (HasInt(game.pov, "health")) {
+            game.pov.health = game.pov.health + this.eathealth
+          }
+          MoveObject (Berries, Bush)
+        </eat>
+        <giveto type="scriptdictionary">
+          <item key="Security Guard">
+            msg ("You give the berries to the security guard. He seems pleased! He hands you his " + ObjectLink(Security Guard Uniform) + ".")
+            MoveObject (Security Guard Uniform, Player)
+          </item>
+        </giveto>
+      </object>
+    </object>
+    <object name="Coffee Store">
+      <inherit name="editor_object" />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </displayverbs>
+      <feature_usegive />
+      <look type="script">
+        msg ("The Coffee store looks pretty fancy. Would you fancy for some coffee?")
+      </look>
+      <use type="script">
+        if (Coffee.parent = Player) {
+          msg ("You don't need any more coffee now do you?")
+        }
+        else {
+          msg ("You got yourself some coffee.")
+        }
+        AddToInventory (Coffee)
+      </use>
+    </object>
+    <object name="Yard">
+      <inherit name="editor_object" />
+      <scenery type="boolean">false</scenery>
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look type="script">
+        msg ("You look at the yard... Nothing much to see here really. ")
+      </look>
+    </object>
+  </object>
+  <object name="Archaeology Room">
+    <inherit name="editor_room" />
+    <attr name="grid_width" type="int">2</attr>
+    <attr name="grid_length" type="int">2</attr>
+    <attr name="grid_label">Archaeology</attr>
+    <attr name="grid_fill">Yellow</attr>
+    <description>In the archaeology section of the Museum room, you notice alot of prehistoric other anicent artifacts. There are plenty of mummies and bones on display too. Further up front, you see some displays of Mughal-period artifacts, and in particular, shelves of weapons. This is the room that harbors the Jade Dagger. </description>
+    <firstenter type="script">
+      EnableTurnScript (Opening Exit to Anthropology Room)
+      msg ("You notice that the motion sensors are on. You need to something about that first. ")
+    </firstenter>
+    <enter type="script">
+    </enter>
+    <exit alias="south" to="Frontyard">
+      <inherit name="southdirection" />
+      <visible type="boolean">false</visible>
+    </exit>
+    <exit name="Archaeology to Anthropology" alias="west" to="Anthropology Room">
+      <inherit name="westdirection" />
+      <visible type="boolean">false</visible>
+      <runscript />
+      <script type="script">
+        MoveObject (Player, Anthropology Room)
+      </script>
+    </exit>
+    <object name="Cabinet">
+      <inherit name="editor_object" />
+      <inherit name="container_closed" />
+      <inherit name="container_lockable" />
+      <feature_container />
+      <autounlock type="boolean">false</autounlock>
+      <autoopen />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <keycount type="int">1</keycount>
+      <key type="object">Tension Wrench</key>
+      <onlock type="script">
+      </onlock>
+      <onunlock type="script">
+        msg ("You successfully unlocked the cabinet using the tension wrench. You open the cabinet and see some " + ObjectLink(Wires) + ".")
+        msg ("Maybe you could use something to break them so that you can get the attention of the maintenance guy?")
+      </onunlock>
+      <look type="script">
+        msg ("You look at the cabinet and notice that it requires a key. But you're prepared for that aren't you?")
+      </look>
+      <onopen type="script">
+        msg ("You noticed many red and blue " + ObjectLink(Wires) + " inside the cabinet. You don't really know anything about electronics...")
+      </onopen>
+      <object name="Wires">
+        <inherit name="editor_object" />
+        <drop type="boolean">false</drop>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <look type="script">
+          msg ("Maybe you could mess with these wires to get distract the maintenance guy... You need to use a tool though or else you might electricute yourself.")
+        </look>
+      </object>
+    </object>
+    <object name="Glass case 1">
+      <inherit name="editor_object" />
+      <inherit name="surface" />
+      <alias>Glass Case</alias>
+      <feature_container />
+      <contentsprefix>containing</contentsprefix>
+      <listchildren />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <drop type="boolean">false</drop>
+      <look type="script">
+        msg ("The glass seems to be made out of some special material, but you could probably still use your laser to cut through it. ")
+      </look>
+      <object name="Jade Dagger">
+        <inherit name="editor_object" />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <prefix>the</prefix>
+        <suffix type="string"></suffix>
+        <look type="script">
+          msg ("The Jade Dagger, this is one out of the 3 relics that you need to collect...")
+        </look>
+      </object>
+    </object>
+    <object name="Snake Charmer">
+      <inherit name="editor_object" />
+      <visible type="boolean">false</visible>
+      <take />
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+      </inventoryverbs>
+      <feature_usegive />
+      <ontake type="script">
+        msg ("You decided to take the snake charmer for some unknown reason. ")
+      </ontake>
+      <look type="script">
+        msg ("Snake Charmer... you can blow it hypnotize snakes.")
+      </look>
+      <selfuseon type="scriptdictionary">
+        <item key="Mask of Shiva"><![CDATA[
+          msg ("You decided to blow the snake charmer. <br/>The snakes listen to your music amusingly and seem appeased.<br/>Eventually they stopped moving and you were able to obtain the Mask of Shiva.")
+          AddToInventory (Mask of Shiva)
+        ]]></item>
+      </selfuseon>
+    </object>
+    <object name="Motion Sensors 1">
+      <inherit name="editor_object" />
+      <alias>Motion Sensors</alias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <prefix>the</prefix>
+      <look type="script">
+        msg ("You could take them out with the program installed on your cellphone.")
+      </look>
+    </object>
+    <object name="Maintenance Guy">
+      <inherit name="editor_object" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <drop type="boolean">false</drop>
+      <look type="script">
+        if (Motion Sensors 1.parent = Archaeology Room) {
+          msg ("The maintenance guy seems busy fixing one of the lights above one of the museum displays. ")
+        }
+        else {
+          msg ("The maintenance guy is paralyzed in fear.")
+        }
+      </look>
+      <attack type="script"><![CDATA[
+        if (Motion Sensors 1.parent = Archaeology Room) {
+          msg ("You can't attack him yet!")
+        }
+        else {
+          MoveObject (Maintenance Guy Uniform, Player)
+          msg ("You kneed the maintenance guy as he shouted for help. You stricked his neck with your elbow and caused him to faint. <br/>You could hear the security guards rushing towards you. <br/>You quickly take the " + ObjectLink(Maintenance Guy Uniform) + " and hid his body in a blindspot of the room. ")
+          msg ("The security guards are almost here. You should wear a disguise. ")
+          RemoveObject (Maintenance Guy)
+        }
+      ]]></attack>
+      <askdefault type="script">
+        msg ("Busy Busy Busy...")
+      </askdefault>
+      <tell type="scriptdictionary">
+        <item key="wires cabinet fix">
+          if (Wires.parent = Cabinet) {
+            msg ("What about them?")
+          }
+          else {
+            msg (" You inform the maintenance guy that there is something wrong with the cabinet. The maintenance guy walks towards the cabinent and examines it. He leaves the room to get some tools. ")
+            MoveObject (Maintenance Guy, Anthropology Room)
+            msg ("Now is your chance to use something to turn off the motion sensors.")
+          }
+        </item>
+      </tell>
+      <object name="Maintenance Guy Uniform">
+        <inherit name="editor_object" />
+        <inventoryverbs type="stringlist" />
+        <displayverbs type="stringlist">
+          <value>Take</value>
+        </displayverbs>
+        <wear type="script"><![CDATA[
+          msg ("The maintenance guy uniform is a bit big for you, but it'll do for now...")
+          RemoveObject (Maintenance Guy Uniform)
+          MoveObject (Security Guards, Archaeology Room)
+          msg ("<br/>You see that the " + ObjectLink(Security Guards) + " have now rushed into the room. You should probably talk to them to explain the cry for help.")
+        ]]></wear>
+        <look type="script">
+        </look>
+      </object>
+    </object>
+    <turnscript name="Opening Exit to Anthropology Room">
+      <enabled type="boolean">false</enabled>
+      <script><![CDATA[
+        if (Jade Dagger.parent = Player) {
+          msg ("Now that you have obtained the Jade Dagger. You can now proceed to the Anthropology Room in the west. ")
+          MakeExitVisible (Archaeology to Anthropology)
+          DisableTurnScript (Opening Exit to Anthropology Room)
+          msg ("<br/>You notice a " + ObjectLink(Snake Charmer) + " that is uncased on display. It looked kind of eerie, but you feel tempted to take it for some reason. ")
+          MakeObjectVisible (Snake Charmer)
+        }
+      ]]></script>
+    </turnscript>
+  </object>
+  <object name="Anthropology Room">
+    <inherit name="editor_room" />
+    <attr name="grid_width" type="int">2</attr>
+    <attr name="grid_length" type="int">2</attr>
+    <attr name="grid_label">Anthropology</attr>
+    <attr name="grid_border">Black</attr>
+    <attr name="grid_fill">Orange</attr>
+    <description>As you enter the Anthropology Room, you notice alot of religion-themed artifacts, particularly from hinduism and buddhism. You notice plenty of statues representing particular deities and clothing from the diverse ethnic communities living in various eco-zones of India. </description>
+    <firstenter type="script"><![CDATA[
+      MoveObject (Assassin, Archaeology Room)
+      msg ("At the center of the room, you see a table with a vase on top. <br/>You notice that the motion sensors are on. You need to something about that first. ")
+      EnableTurnScript (Opening Exit to Gallery)
+    ]]></firstenter>
+    <enter type="script">
+    </enter>
+    <exit alias="east" to="Archaeology Room">
+      <inherit name="eastdirection" />
+      <attr name="grid_length" type="int">1</attr>
+    </exit>
+    <exit name="Anthropology to Gallery" alias="west" to="Gallery">
+      <inherit name="westdirection" />
+      <visible type="boolean">false</visible>
+      <runscript />
+      <script type="script">
+        MoveObject (Player, Gallery)
+      </script>
+    </exit>
+    <object name="Buddha ashes">
+      <inherit name="editor_object" />
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <prefix>the</prefix>
+      <take />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <visible type="boolean">false</visible>
+      <look type="script">
+        msg ("A portion of the reminaing ashes of the buddha himself...")
+      </look>
+    </object>
+    <turnscript name="Assassin Attack">
+      <script>
+        MakeObjectVisible (Assassin)
+        if (Player.parent = Storage Room) {
+          OutputTextNoBr (" ")
+        }
+        else if (Got(Antique Knife)) {
+          msg ("You defend against " + ObjectLink(Assassin) + " with Antique Knife! It helps you block a few of her attacks. But she is too quick, and her blades are significantly longer than yours. You need a longer weapon to defeat her...")
+          DecreaseHealth (5)
+          play sound ("Swords Clashing-SoundBible.com-912903192.mp3", false, false)
+        }
+        else {
+          msg ("The " + ObjectLink(Assassin) + " starts to attack you! She slashes her two blades at you and suffer critical damage!")
+          DecreaseHealth (10)
+          play sound ("Swoosh 3-SoundBible.com-1573211927.mp3", false, false)
+        }
+      </script>
+    </turnscript>
+    <object name="Antique Knife">
+      <inherit name="editor_object" />
+      <take />
+      <look type="script">
+        msg ("An looking antique knife, but still looks sharp enough to use. ")
+      </look>
+      <ontake type="script">
+        msg ("You equip yourself with the antique knife.")
+      </ontake>
+    </object>
+    <object name="Motion Sensors 2">
+      <inherit name="editor_object" />
+      <alias>Motion Sensors</alias>
+      <visible />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <prefix>the </prefix>
+      <look type="script">
+        msg ("You could take them out with the program installed on your cellphone.")
+      </look>
+    </object>
+    <object name="Storage Room">
+      <inherit name="openable" />
+      <feature_container />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <attr name="grid_fill">Snow</attr>
+      <description><![CDATA[You opened the door to the storage room, ran in, and slammed the door shut...<br/>At least she can't get to you here. <br/>You have nowhere else to hid. Maybe you should look around. ]]></description>
+      <visible />
+      <openscript type="script">
+        if (Assassin.parent = Anthropology Room) {
+          if (Player.parent = Anthropology Room) {
+            MoveObject (Player, Storage Room)
+            HelperCloseObject (Storage Room)
+          }
+          else if (Player.parent = Storage Room) {
+            msg ("You opened the door quickly and ran out to face the assassin!")
+            MoveObject (Player, Anthropology Room)
+            HelperCloseObject (Storage Room)
+          }
+        }
+        else {
+          msg ("You opened the door to see the storage room. Nothing much to see. You closed the door. ")
+        }
+      </openscript>
+      <look type="script">
+        msg ("Could be a good hiding spot...")
+      </look>
+      <object name="Rope">
+        <inherit name="editor_object" />
+        <take />
+        <feature_usegive />
+        <look type="script">
+          msg ("A small rope. Perhaps you could use it to tie something and make a weapon.")
+        </look>
+        <use type="script"><![CDATA[
+          if (Broomstick.parent = Player and Rope.parent = Player and Antique Knife.parent = Player) {
+            MakeObjectVisible (Spear)
+            AddToInventory (Spear)
+            msg ("You decided to use the rope to tie the antique knife on the stick of the broom. <br/>You've now gotten yourself a " + ObjectLink(Spear) + ".")
+            RemoveObject (Rope)
+            RemoveObject (Antique Knife)
+            RemoveObject (Broomstick)
+          }
+          else {
+            msg ("You don't have all the objects to use rope on. ")
+          }
+        ]]></use>
+        <useon type="scriptdictionary" />
+      </object>
+      <object name="Broomstick">
+        <inherit name="editor_object" />
+        <take />
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+        </inventoryverbs>
+        <look type="script">
+          msg ("An ordinary Broomstick. The stick part of it might be useful though. ")
+        </look>
+      </object>
+      <object name="Spear">
+        <inherit name="editor_object" />
+        <visible type="boolean">false</visible>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Drop</value>
+        </inventoryverbs>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <look type="script">
+          msg ("You got yourself a DIY spear! You've used one of those before so maybe you still have some skills left in you. ")
+        </look>
+      </object>
+      <object name="Fire Extinguisher">
+        <inherit name="editor_object" />
+        <feature_usegive />
+        <use />
+        <take />
+        <look type="script">
+          msg ("Hmm... maybe you could use this to fend people off?")
+        </look>
+        <selfuseon type="scriptdictionary">
+          <item key="Assassin">
+            msg ("You used the fire extinguisher on the assassin! You blast the stored nitrogen at the Assassin and her eyes seems to have been contacted. She runs away, it is your victory for now. ")
+            DisableTurnScript (Assassin Attack)
+            MoveObject (Assassin, Frontyard)
+          </item>
+        </selfuseon>
+      </object>
+      <exit alias="out" to="Anthropology Room">
+        <inherit name="outdirection" />
+      </exit>
+    </object>
+    <turnscript name="Opening Exit to Gallery">
+      <script><![CDATA[
+        if (Motion Sensors 2.parent = Anthropology Room) {
+          OutputTextNoBr (" ")
+        }
+        else if (Assassin.parent = Anthropology Room) {
+          OutputTextNoBr (" ")
+        }
+        else if (Player.parent = Anthropology Room) {
+          MakeObjectVisible (Buddha ashes)
+          msg ("The Assassin has left! <br/>You notice the Buddhas ashes enclosed in the vase at the center of the room. You take it.<br/>Now you can leave for the Gallery at the west.")
+          AddToInventory (Buddha ashes)
+          MakeExitVisible (Anthropology to Gallery)
+          DisableTurnScript (Opening Exit to Gallery)
+        }
+      ]]></script>
+    </turnscript>
+    <exit alias="in" to="Storage Room">
+      <inherit name="indirection" />
+      <visible type="boolean">false</visible>
+    </exit>
+  </object>
+  <object name="Gallery">
+    <inherit name="editor_room" />
+    <attr name="grid_width" type="int">2</attr>
+    <attr name="grid_length" type="int">2</attr>
+    <attr name="grid_label">Gallery</attr>
+    <attr name="grid_border">Black</attr>
+    <attr name="grid_fill">Pink</attr>
+    <description>In the Gallery you notice both side of walls displaying masks. All of these paintings represented deities of some sort. Some resembled animals, some resembled humans, and some in between. The masks had a unique color palette and expression to their own. Overall, you thought they looked creepy. </description>
+    <enter type="script">
+      EnableTurnScript (Opening Exit to Courtyard)
+    </enter>
+    <firstenter type="script"><![CDATA[
+      msg ("You scanned through the room and see the empty space amongst the row of masks. It's quite suspicious.<br/><br/>Maybe you should read the notebook to see if it says anything.")
+    ]]></firstenter>
+    <exit alias="east" to="Anthropology Room">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit name="Gallery to Courtyard" alias="north" to="Courtyard">
+      <inherit name="northdirection" />
+      <locked />
+      <lockmessage>You cannot access the courtyard yet unless you have collected all relics!</lockmessage>
+    </exit>
+    <object name="Mask of Shiva">
+      <inherit name="editor_object" />
+      <take type="boolean">false</take>
+      <feature_switchable />
+      <drop type="boolean">false</drop>
+      <visible type="boolean">false</visible>
+      <alt type="stringlist">
+        <value>Mask</value>
+      </alt>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <useindividualverblist type="boolean">false</useindividualverblist>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <grab type="script"><![CDATA[
+        msg ("You try to take grab the Mask of Shiva, but the snakes start to hiss at you. <br/>Suddenly, they try to bite you and you lose some health. <br/><br/>You need to use something to control these snakes...")
+        DecreaseHealth (5)
+      ]]></grab>
+      <look type="script">
+        msg ("A golden mask of a human face, but with snakes protruding on both sides. ")
+      </look>
+    </object>
+    <turnscript name="Opening Exit to Courtyard">
+      <script><![CDATA[
+        if (Jade Dagger.parent = Player and Buddha ashes.parent = Player and Mask of Shiva.parent = Player) {
+          msg ("You now have all the relics. You are now ready to leave. <br/>However, you should check the notebook for instructions on how to do that....")
+          UnlockExit (Gallery to Courtyard)
+          if (Security Guards.parent = Gallery) {
+            MakeExitInvisible (Gallery to Courtyard)
+            msg ("However, the security guards are still blocking your way...")
+          }
+          else {
+            msg ("You can now go north to access the courtyard.")
+          }
+          DisableTurnScript (Opening Exit to Courtyard)
+        }
+      ]]></script>
+    </turnscript>
+    <object name="Security Guards">
+      <inherit name="editor_object" />
+      <visible />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist" />
+      <speak type="script"><![CDATA[
+        if (Security Guards.parent = Archaeology Room) {
+          msg ("\"What was that scream?\" one of the security guards asked.<br/>They looked at you suspiciously, but supposed that you were the maintenance guy who was suppose to fix the lights in the room. <br/>\"Oh it was nothing. It was just that I noticed that I forgot to bring some of my tools. I've been working all day you know, it's been frustrating.\" you lied. <br/>\"You're crazy. Making a fuss about that,\" the security guard responded. <br/>\"Haha sorry about that. While you're here, would you mind grabbing some stuff from the other room? I think there might be some spare tools I could use. I'm too busy with work here you know,\" you lied again. <br/>The security guards seemed upset and left the room. <br/><br/>You felt relieved. At least they didn't see through your disguise. <br/>However, now they have occupied the next room you need to go to. You still need to find a way to get them out of there. ")
+          MoveObject (Security Guards, Anthropology Room)
+        }
+        else {
+          msg ("They're not in the mood for talking.")
+        }
+      ]]></speak>
+      <look type="script">
+        msg ("You could take out one of them with ease... but not all of them at once. ")
+      </look>
+    </object>
+    <object name="Empty Space">
+      <inherit name="editor_object" />
+      <drop type="boolean">false</drop>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look type="script"><![CDATA[
+        msg ("You look at this empty space. You could feel some strange presence there.<br/>You should try saying something.<br/>What is it that you want to say?")
+        get input {
+          if (result = "apane krodh ko shaant") {
+            MakeObjectVisible (Mask of Shiva)
+            msg ("You whisper the magic words \"apane krodh ko shaant\" and notice that empty space is replaced by the " + ObjectLink(Mask of Shiva) + ".")
+            MakeObjectInvisible (Empty Space)
+          }
+          else {
+            msg ("No response... Maybe you should check the notebook. ")
+          }
+        }
+      ]]></look>
+    </object>
+  </object>
+  <object name="Courtyard">
+    <inherit name="editor_room" />
+    <attr name="grid_width" type="int">4</attr>
+    <attr name="grid_length" type="int">4</attr>
+    <attr name="grid_label">Courtyard</attr>
+    <attr name="grid_fill">SkyBlue</attr>
+    <enter type="script">
+      MoveObject (Assassin, Courtyard)
+      msg ("As you entered the courtyard you see that the " + ObjectLink(Assassin) + " has chased you here. You have no where to run since you have to wait in here to get picked up. Do you attack or talk to the assassin? ")
+      MakeObjectVisible (Assassin)
+    </enter>
+    <exit alias="south" to="Gallery">
+      <inherit name="southdirection" />
+    </exit>
+    <object name="Ladder">
+      <inherit name="editor_object" />
+      <visible type="boolean">false</visible>
+      <displayverbs type="stringlist" />
+      <climb type="script">
+        if (Rubber Ducky.parent = Assassin or Assassin.parent = Frontyard) {
+          msg ("You successfully climbed up the ladder and entered the helicopter. Congratulations! You've successfully completed your mission!")
+          finish
+          play sound ("finalfanta_3d4bpu2c.mp3", false, false)
+        }
+        else {
+          msg ("You cannot climb up the ladder yet. The Assassin is still targeting you. ")
+        }
+      </climb>
+    </object>
+  </object>
+  <verb>
+    <property>pick</property>
+    <pattern>pick</pattern>
+    <defaultexpression>"You can't pick " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>putin</property>
+    <pattern>put in</pattern>
+    <defaultexpression>"You can't put in " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>placebombin</property>
+    <pattern>place bomb in</pattern>
+    <defaultexpression>"You can't place bomb in " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>text</property>
+    <pattern>text</pattern>
+    <defaultexpression>"You can't text " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>attack</property>
+    <pattern>attack</pattern>
+    <defaultexpression>"You can't attack " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>press</property>
+    <pattern>press</pattern>
+    <defaultexpression>"You can't press " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>fling</property>
+    <pattern>fling</pattern>
+    <defaultexpression>"You can't fling " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>grab</property>
+    <pattern>grab</pattern>
+    <defaultexpression>"You can't grab " + object.article + "."</defaultexpression>
+  </verb>
+  <timer name="Knocking on Door">
+    <interval>15</interval>
+    <enabled type="boolean">false</enabled>
+    <script><![CDATA[
+      msg ("<br/>You hear a knocking at the front door. Maybe you should take a look?")
+      play sound ("door-knock-3.mp3", false, false)
+      DisableTimer (Knocking on Door)
+    ]]></script>
+  </timer>
+  <timer name="Wait until nightfall">
+    <interval>15</interval>
+    <script>
+      msg ("It's already night time. You are ready. You see a " + ObjectLink(Window) + " without guards nearby. You should use your laser on it to enter.")
+      MakeObjectVisible (Window)
+      DisableTimer (Wait until nightfall)
+    </script>
+  </timer>
+  <timer name="Helicopter Arrival">
+    <interval>20</interval>
+    <script>
+      msg ("You hear the noise of the helicopter nearby. ")
+      if (game.pov.parent = Courtyard) {
+        MakeObjectVisible (Ladder)
+        play sound ("Military Helicopter-SoundBible.com-1009489035.mp3", false, false)
+        msg ("You look above and you see a helicopter lowering its ladder for you.")
+        msg ("Do you want to climb the ladder?")
+        SetTimerInterval (Helicopter Arrival, 60)
+      }
+    </script>
+  </timer>
+</asl>
