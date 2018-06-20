@@ -1,0 +1,358 @@
+<!--Saved by Quest 5.6.6108.15891-->
+<asl version="550">
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <game name="Relic Robber and the Indian Museum">
+    <gameid>0ca900c9-40fb-442b-b776-ff314d1d6c6e</gameid>
+    <version>1.0</version>
+    <firstpublished>2017</firstpublished>
+    <gridmap />
+    <feature_asktell />
+    <appendobjectdescription />
+    <multiplecommands />
+    <attr name="autodescription_youarein" type="int">1</attr>
+    <attr name="autodescription_youcango" type="int">0</attr>
+    <showhealth />
+    <pov type="object">Player</pov>
+    <start type="script"><![CDATA[
+      msg ("You're a professional thief who works for an underground organization known as the “Relic Robbers.\"  <br/>You've just arrived at the city of Kolkata in India yesterday night, before checking into the hotel you're currently in. You don't know any details about your mission yet, aside from the fact that you'll be stealing something from the Indian Museum, the largest and oldest museum in India. <br/>However, word about this mission has been leaked, and you were told by your boss that people will be out there to interfere with your mission. People from other organizations that also evade the law and aren't afriad to use lethal means to achieve their goals. <br/>It's already noon, and you've been waiting for a sign. <br/>Before your departure to India, you were given the code \"Arabica.\" That will lead to your next clue. <br/>For now, you wait patiently. ")
+    ]]></start>
+    <onhealthzero type="script">
+      msg ("You've ran out of blood and died. Mission failed. ")
+      finish
+    </onhealthzero>
+  </game>
+  <object name="Hotel Room">
+    <inherit name="editor_room" />
+    <alias>Hotel Room</alias>
+    <attr name="grid_label">Hotel Room</attr>
+    <attr name="grid_fill">RosyBrown</attr>
+    <object name="Player">
+      <inherit name="editor_object" />
+      <inherit name="editor_player" />
+      <inherit name="namedmale" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist" />
+      <drop type="boolean">false</drop>
+      <take type="boolean">false</take>
+      <attr name="pov_look">You're a man in your late 20s of asian descent. You're good-looking and in prime shape. People call you by the name "Misuta."</attr>
+    </object>
+    <object name="Desk">
+      <inherit name="editor_object" />
+      <inherit name="surface" />
+      <feature_container />
+      <listchildren type="boolean">false</listchildren>
+      <hidechildren />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look type="script">
+        MakeObjectVisible (Paperclip)
+        MakeObjectVisible (Telephone)
+        msg ("Nothing seems really out of the usual. You do notice the " + ObjectLink(Telephone) + " and a " + ObjectLink(Paperclip) + ".")
+      </look>
+      <object name="Paperclip">
+        <inherit name="editor_object" />
+        <visible type="boolean">false</visible>
+        <take />
+        <attr name="feature_usegive" type="boolean">false</attr>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Drop</value>
+        </inventoryverbs>
+        <look type="script">
+          msg ("You just got an idea. You could be use the paperclip to make some handy tool. But you need a plier first.")
+        </look>
+      </object>
+      <object name="Telephone">
+        <inherit name="editor_object" />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <look type="script">
+          msg ("You look at the telephone. ")
+          if (Coffee.parent = Player) {
+            msg ("You don't feel like calling.")
+          }
+          else {
+            msg ("Hmm... maybe you could order some coffee. It'll be a long night afterall.")
+            msg (do(this, call))
+          }
+        </look>
+        <call type="script">
+          msg ("You decided to call the front desk to order some coffee.")
+          AddToInventory (Coffee)
+        </call>
+      </object>
+    </object>
+    <object name="Closet">
+      <inherit name="container_closed" />
+      <inherit name="editor_object" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <usestandardverblist type="boolean">false</usestandardverblist>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <drop type="boolean">false</drop>
+      <feature_container />
+      <close type="boolean">false</close>
+      <onopen type="script">
+        MakeObjectVisible (Toolbox)
+        msg ("You notice a " + ObjectLink(Toolbox) + " at the bottom corner. Perhaps it could come in handy? You also find a " + ObjectLink(Rubber Ducky) + " lying on the ground.")
+      </onopen>
+      <onclose type="script">
+        MakeObjectInvisible (Toolbox)
+        msg ("You closed the closet.")
+      </onclose>
+      <object name="Toolbox">
+        <inherit name="editor_object" />
+        <inherit name="container_closed" />
+        <alias>Toolbox</alias>
+        <visible type="boolean">false</visible>
+        <feature_container />
+        <close type="boolean">false</close>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Open</value>
+        </displayverbs>
+        <drop type="boolean">false</drop>
+        <look type="script">
+        </look>
+        <onopen type="script">
+          msg ("You notice a typical set of mechanic's tools. You pick up a plier. It might come in handy.")
+          AddToInventory (Plier)
+        </onopen>
+        <object name="Plier">
+          <inherit name="editor_object" />
+          <take />
+          <feature_usegive />
+          <look type="script">
+            msg ("You could potentially use the plier on something...")
+          </look>
+          <selfuseon type="scriptdictionary">
+            <item key="Paperclip">
+              msg ("You applied pliers on the paperclip. You got a " + ObjectLink(Tension Wrench) + ".")
+              AddToInventory (Tension Wrench)
+              RemoveObject (Paperclip)
+            </item>
+          </selfuseon>
+        </object>
+      </object>
+      <object name="Rubber Ducky">
+        <inherit name="editor_object" />
+        <take />
+        <look type="script">
+          msg ("Could be a lucky charm.")
+        </look>
+      </object>
+    </object>
+    <object name="Door">
+      <inherit name="editor_object" />
+      <inherit name="openable" />
+      <feature_container />
+      <close />
+      <open />
+      <isopen type="boolean">false</isopen>
+      <contentsprefix type="string"></contentsprefix>
+      <autounlock type="boolean">false</autounlock>
+      <autoopen type="boolean">false</autoopen>
+      <nokeymessage>You </nokeymessage>
+      <unlockmessage type="string"></unlockmessage>
+      <hidechildren type="boolean">false</hidechildren>
+      <locked type="boolean">false</locked>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Open</value>
+        <value>Close</value>
+      </inventoryverbs>
+      <visible />
+      <usestandardverblist type="boolean">false</usestandardverblist>
+      <listalias>Door</listalias>
+      <visitor type="object">No one</visitor>
+      <openscript type="script">
+        if (Knocking on Door.enabled) {
+          msg ("You don't see anyone. You close the door.")
+          HelperCloseObject (Door)
+        }
+        else if (Door.visitor = No one) {
+          msg ("You should look at the door first just in case.")
+          HelperCloseObject (Door)
+        }
+        else if (Door.visitor = Room Service) {
+          if (Coffee.parent = Player) {
+          }
+          {msg ("You see the room service assistant again. You decided to ignore her since you already have your coffee.") {
+            }
+            EnableTimer (Knocking on Door)
+          }
+          else if (Door.visitor = Assassin) {
+            msg ("You opened the door to greet the women. Before you could even react, you were already dead. ")
+            finish
+          }
+          else if (Door.visitor = Deliverer) {
+            msg ("You open the door to greet the mysterious person. He hands you a " + ObjectLink(Suitcase) + " and leaves without a word.")
+            AddToInventory (Suitcase)
+          }
+      </openscript>
+      <look type="script"><![CDATA[
+        msg ("You take a peak through the door viewer.")
+        if (Knocking on Door.enabled = false) {
+          if (RandomChance(30)) {
+            Door.visitor = Room Service
+            MakeObjectVisible (Room Service)
+            msg ("You see a room service assistant.<br/>You ask her the key question, \"What's to drink\"?<br/>She responds, \"Perhaps some Coffee?\"<br/>You do feel like getting some coffee though.<br/>would you like to open or ignore the door?")
+          }
+          else if (RandomChance(30)) {
+            Door.visitor = Assassin
+            MakeObjectVisible (Assassin)
+            msg ("You see a suspicious looking women at the door. She seems to be of Indian descent. <br/>You ask her the key question, \"What's to drink\"?<br/>She doesn't respond.<br/>Would you like to open or ignore the door?")
+          }
+          else {
+            Door.visitor = Deliverer
+            MakeObjectVisible (Deliverer)
+            msg ("You see someone you don't recognize. <br/>You ask him the key question, \"What's to drink\"?<br/>He responds solemnly, \"Arabica.\"<br/>Would you like to open or ignore the door?")
+          }
+        }
+        else {
+          msg ("You don't see anything.")
+        }
+      ]]></look>
+      <ignore type="script">
+        if (Knocking on Door.enabled = false) {
+          msg ("You decided to ignore the person knocking on the door. ")
+          EnableTimer (Knocking on Door)
+        }
+        else {
+          msg ("There's nothing to ignore now really.")
+        }
+      </ignore>
+      <object name="Room Service">
+        <inherit name="editor_object" />
+        <object name="Coffee">
+          <inherit name="editor_object" />
+          <inherit name="edible" />
+          <take type="boolean">false</take>
+          <feature_edible />
+          <eathealth type="int">100</eathealth>
+          <eatmsg>You drank some coffee. You feel revitalized!</eatmsg>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Drop</value>
+            <value>Eat</value>
+          </inventoryverbs>
+        </object>
+      </object>
+      <object name="Deliverer">
+        <inherit name="editor_object" />
+        <object name="Suitcase">
+          <inherit name="editor_object" />
+          <inherit name="container_closed" />
+          <inherit name="container_lockable" />
+          <feature_container />
+          <keycount type="int">1</keycount>
+          <autounlock type="boolean">false</autounlock>
+          <nokeymessage>You cannot open this. You don't have a key either. You need a tool.</nokeymessage>
+          <unlockmessage>You used the tension wrench on the suitcase. With you master skills as a thief, you unlocked the suitcase very easily.</unlockmessage>
+          <canlockopen type="boolean">false</canlockopen>
+          <drop type="boolean">false</drop>
+          <take />
+          <close type="boolean">false</close>
+          <lockmessage>You cannot open this. You don't have a key either. You need a tool.</lockmessage>
+          <key type="object">Tension Wrench</key>
+          <onopen type="script">
+            msg ("You opened the suitcase and obtained a bomb, a laser, a cellphone, and a notebook.")
+            AddToInventory (Bomb)
+            AddToInventory (Notebook)
+            AddToInventory (Cellphone)
+            AddToInventory (Laser)
+          </onopen>
+          <object name="Bomb">
+            <inherit name="editor_object" />
+          </object>
+          <object name="Notebook">
+            <inherit name="editor_object" />
+          </object>
+          <object name="Cellphone">
+            <inherit name="editor_object" />
+          </object>
+          <object name="Laser">
+            <inherit name="editor_object" />
+            <usedefaultprefix />
+          </object>
+        </object>
+      </object>
+      <object name="Assassin">
+        <inherit name="editor_object" />
+      </object>
+      <object name="No one">
+        <inherit name="editor_object" />
+        <visible />
+      </object>
+    </object>
+    <exit name="Exit to Frontyard" alias="out" to="Frontyard">
+      <inherit name="outdirection" />
+      <visible type="boolean">false</visible>
+      <locked type="boolean">false</locked>
+      <runscript />
+      <script type="script">
+        if (Bomb.parent = Player and Notebook.parent = Player and Cellphone.parent = Player and Laser.parent = Player and Rubber Ducky.parent = Player) {
+          MakeExitVisible (Exit to Frontyard)
+          msg ("You are ready to head out of the hotel for the mission.")
+        }
+      </script>
+    </exit>
+    <turnscript name="Opening Exit to Frontyard">
+      <enabled type="boolean">false</enabled>
+      <script>
+        if (Bomb.parent = Player and Notebook.parent = Player and Cellphone.parent = Player and Laser.parent = Player and Rubber Ducky.parent = Player) {
+          MakeExitVisible (Exit to Frontyard)
+          msg ("You are ready to head out of the hotel for the mission.")
+        }
+      </script>
+    </turnscript>
+  </object>
+  <verb>
+    <property>ignore</property>
+    <pattern>ignore</pattern>
+    <defaultexpression>"You can't ignore " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>call</property>
+    <pattern>call</pattern>
+    <defaultexpression>"You can't call " + object.article + "."</defaultexpression>
+  </verb>
+  <object name="Tension Wrench">
+    <inherit name="editor_object" />
+    <attr name="feature_usegive" type="boolean">false</attr>
+    <look type="script">
+      msg ("Combined with a your skills, a tension wrench that can open can key hole!")
+    </look>
+    <selfuseon type="scriptdictionary">
+      <item key="Suitcase">
+        HelperOpenObject (Suitcase)
+      </item>
+    </selfuseon>
+  </object>
+  <object name="Frontyard">
+    <inherit name="editor_room" />
+  </object>
+  <timer name="Knocking on Door">
+    <interval>15</interval>
+    <enabled />
+    <script><![CDATA[
+      msg ("<br/>You hear a knocking at the front door. Maybe you should take a look?")
+      DisableTimer (Knocking on Door)
+    ]]></script>
+  </timer>
+</asl>
